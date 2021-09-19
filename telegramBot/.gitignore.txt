@@ -1,5 +1,0 @@
-Source/Command/Commands/
-Source/Message/
-Source/Logger
-*.mdf
-*.txt

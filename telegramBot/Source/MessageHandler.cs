@@ -19,7 +19,7 @@ namespace telegramBot.Source
         public MessageHandler(TelegramBotClient client)
         {
             this.client = client;
-            commands.Add(new SummaCommand());
+            commands.Add(new ArithmeticCommand());
         }
 
         internal async void OnMessageHandler(object sender, MessageEventArgs e)
@@ -35,26 +35,17 @@ namespace telegramBot.Source
         }
         public void ProcessMessageText(Message message)
         {
-            string firstWordOfMessage = message.Text.Split(' ')[0];
+            string keyWord = message.Text.Split(' ')[0];
 
-            string specialSymbol = firstWordOfMessage.Substring(0, 1);
-            firstWordOfMessage = firstWordOfMessage.Remove(0, 1);
+            if (double.TryParse(keyWord, out double n))
+                keyWord = "arithmetic";
 
-            switch (specialSymbol)
+            foreach (var command in commands)
             {
-                case "/":
-                    foreach (var command in commands)
-                    {
-                        if (command.Equals(firstWordOfMessage))
-                        {
-                            command.Execute(message, client);
-                        }
-                    }
-                    break;
-                case "*":
-                    break;
-                default:
-                    break;
+                if (command.Equals(keyWord))
+                {
+                    command.Execute(message, client);
+                }
             }
         }
     }

@@ -16,17 +16,22 @@ namespace telegramBot.Source.Command.Commands
 {
     public class ArithmeticCommand : Command
     {
-        public override string[] Names { get; set; } = new string[] { "arithmetic" };
+        public override string[] Names { get; set; } = new string[] { "arithmetic operation" };
 
         public override async void Execute(Message message, TelegramBotClient client)
         {
             await client.SendTextMessageAsync(message.Chat.Id, $"Result: {Calc(message.Text)}");
         }
+        private string FormatMathExpression(string mathExpression)
+        {
+            mathExpression = Regex.Replace(mathExpression, @"((?<=\d)(?=\p{Sm})|(?<=\p{Sm})(?=\d))", " ");
+            return Regex.Replace(mathExpression, @"\p{Sm}$", "");
+        }
 
         private double Calc(string mathExpression)
         {
-            var result = Regex.Replace(mathExpression, @"(\d)(\p{L})", "$1 $2");
-            var parts = result.Split(' '); 
+            mathExpression = FormatMathExpression(mathExpression);
+            string[] parts = mathExpression.Split(' '); 
 
             var operands = new List<double>();
             var operations = new List<string>();

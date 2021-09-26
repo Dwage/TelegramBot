@@ -22,6 +22,7 @@ namespace telegramBot.Source
             commands.Add(new ArithmeticCommand());
             commands.Add(new GetMyIdCommand());
             commands.Add(new GetChatIdCommand());
+            commands.Add(new ParserCommand());
         }
 
         internal async void OnMessageHandler(object sender, MessageEventArgs e)
@@ -38,9 +39,10 @@ namespace telegramBot.Source
         public void ProcessMessageText(Message message)
         {
             string keyWord = message.Text.Split(' ')[0];
+            keyWord = keyWord.ToLower();
 
             if (double.TryParse(keyWord.Substring(0, 1), out double n))
-                keyWord = "arithmetic operation";
+                keyWord = "arithmeticOperation";
 
             foreach (var command in commands)
             {

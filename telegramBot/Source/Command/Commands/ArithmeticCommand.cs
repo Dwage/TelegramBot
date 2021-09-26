@@ -16,7 +16,7 @@ namespace telegramBot.Source.Command.Commands
 {
     public class ArithmeticCommand : Command
     {
-        public override string[] Names { get; set; } = new string[] { "arithmetic operation" };
+        public override string[] Names { get; set; } = new string[] { "arithmeticOperation" };
 
         public override async void Execute(Message message, TelegramBotClient client)
         {

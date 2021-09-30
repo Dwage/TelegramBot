@@ -1,9 +1,5 @@
-﻿using AngleSharp.Html.Dom;
-using System;
+﻿/*using AngleSharp.Html.Dom;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace telegramBot.Source.Parser.ConcreteParser
 {
@@ -30,4 +26,4 @@ namespace telegramBot.Source.Parser.ConcreteParser
         }
     }
     
-}
+}*/

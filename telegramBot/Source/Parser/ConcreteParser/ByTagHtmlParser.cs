@@ -4,16 +4,26 @@ using System.Linq;
 
 namespace telegramBot.Source.Parser.ConcreteParser
 {
-    class TextParser : IParser<string[]>
+    class ByTagHtmlParser : IParser<string[]>
     {
         public string[] Parse(IHtmlDocument document, IParserSettings settings)
         {
             var list = new List<string>();
             var items = document.QuerySelectorAll(settings.TagToParseBy);
 
-            foreach (var item in items)
+            if (settings.TagToParseBy.Contains("img"))
             {
-                list.Add(item.TextContent);
+                foreach (var item in items)
+                {
+                    list.Add(item.GetAttribute("src"));
+                }
+            }
+            else
+            {
+                foreach (var item in items)
+                {
+                    list.Add(item.TextContent);
+                }
             }
 
             return list.ToArray();

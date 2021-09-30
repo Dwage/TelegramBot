@@ -10,41 +10,41 @@ namespace telegramBot.Source.Command.Commands
     class ParserCommand : Command
     {
         public override string[] Names { get; set; } = { "parse" };
-        private ParserWorker<string[]> parser;
+        private ParserWorker<string[]> parserWorker;
         private Message message;
         private TelegramBotClient client;
-        private string url;
-        private string tagToParseBy;
         public async override void Execute(Message message, TelegramBotClient client)
         {
             this.message = message;
             this.client = client;
 
-            ProcessMessage(message);
+            string url = string.Empty;
+            string tagToParseBy = string.Empty;
+            ProcessMessage(message, ref url, ref tagToParseBy);
 
-            if (CheckURLValid(url))
+            if (CheckURLValid(url) && tagToParseBy != string.Empty)
             {
-                parser = new ParserWorker<string[]>(new TextParser());
-                parser.Settings = new HtmlParserSettings(url, tagToParseBy);
-                parser.OnNewData += Print;
-                parser.Start();
+                parserWorker = new ParserWorker<string[]>(new ByTagHtmlParser());
+                parserWorker.Settings = new HtmlParserSettings(url, tagToParseBy);
+                parserWorker.OnNewData += Print;
+                parserWorker.Start();
             }
             else
             {
-                await client.SendTextMessageAsync(message.Chat.Id, "Invalid url");
+                await client.SendTextMessageAsync(message.Chat.Id, "Invalid url or the tag is not specified");
             }
         }
         public bool CheckURLValid(string url)
             => Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult)
                && uriResult.Scheme == Uri.UriSchemeHttps;
 
-        private void ProcessMessage(Message message)
+        private void ProcessMessage(Message message, ref string url, ref string tagToParseBy)
         {
             string[] messageWords = message.Text.Split(' ');
-            url = string.Empty;
-            tagToParseBy = string.Empty;
+
             if (messageWords.Length >= 2)
                 url = messageWords[1];
+
             if (messageWords.Length >= 3)
             {
                 for (int i = 2; i < messageWords.Length; i++)
@@ -54,10 +54,16 @@ namespace telegramBot.Source.Command.Commands
 
         private void Print(object arg1, string[] args)
         {
-            args.Distinct().ToArray();
-            foreach(string arg in args)
-                client.SendTextMessageAsync(message.Chat.Id, arg);
-            parser.Abort();
+            if (args.Length != 0)
+            {
+                args.Distinct().ToArray();
+                foreach (string arg in args)
+                    client.SendTextMessageAsync(message.Chat.Id, arg);
+            }
+            else
+                client.SendTextMessageAsync(message.Chat.Id, "Nothing was found");
+
+            parserWorker.Abort();
         }
     }
 }
